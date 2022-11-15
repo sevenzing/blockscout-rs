@@ -5,6 +5,7 @@ info:
 tags:
   - name: SignatureService
   - name: AbiService
+  - name: Health
 consumes:
   - application/json
 produces:
@@ -17,7 +18,9 @@ paths:
         "200":
           description: ""
           schema:
-            $ref: '#/definitions/v1Abi'
+            type: array
+            items:
+              $ref: '#/definitions/v1Abi'
         default:
           description: An unexpected error response.
           schema:
@@ -43,7 +46,9 @@ paths:
         "200":
           description: ""
           schema:
-            $ref: '#/definitions/v1Abi'
+            type: array
+            items:
+              $ref: '#/definitions/v1Abi'
         default:
           description: An unexpected error response.
           schema:
@@ -75,7 +80,37 @@ paths:
             $ref: '#/definitions/v1CreateSignaturesRequest'
       tags:
         - SignatureService
+  /health:
+    get:
+      summary: |-
+        If the requested service is unknown, the call will fail with status
+        NOT_FOUND.
+      operationId: Health_Check
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1HealthCheckResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: service
+          in: query
+          required: false
+          type: string
+      tags:
+        - Health
 definitions:
+  HealthCheckResponseServingStatus:
+    type: string
+    enum:
+      - UNKNOWN
+      - SERVING
+      - NOT_SERVING
+      - SERVICE_UNKNOWN
+    default: UNKNOWN
   protobufAny:
     type: object
     properties:
@@ -110,6 +145,9 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/v1Argument'
+      indexed:
+        type: boolean
+        title: this is present only in events
       name:
         type: string
       type:
@@ -128,9 +166,18 @@ definitions:
     type: object
     properties:
       abi:
-        $ref: '#/definitions/v1Abi'
+        type: array
+        items:
+          $ref: '#/definitions/v1Abi'
   v1GetFunctionAbiResponse:
     type: object
     properties:
       abi:
-        $ref: '#/definitions/v1Abi'
+        type: array
+        items:
+          $ref: '#/definitions/v1Abi'
+  v1HealthCheckResponse:
+    type: object
+    properties:
+      status:
+        $ref: '#/definitions/HealthCheckResponseServingStatus'

@@ -22,8 +22,10 @@ message Argument {
   string name = 1;
   string type = 2;
   repeated Argument components = 3;
+  // this is present only in events
+  optional bool indexed = 4;
   // decoded value
-  string value = 4;
+  string value = 5;
 }
 
 message Abi {
@@ -33,11 +35,11 @@ message Abi {
 
 message GetFunctionAbiRequest { string tx_input = 1; }
 
-message GetFunctionAbiResponse { Abi abi = 1; }
+message GetFunctionAbiResponse { repeated Abi abi = 1; }
 
 message GetEventAbiRequest {
   string data = 1;
   repeated string topics = 2;
 }
 
-message GetEventAbiResponse { Abi abi = 1; }
+message GetEventAbiResponse { repeated Abi abi = 1; }
